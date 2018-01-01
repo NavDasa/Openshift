@@ -436,6 +436,69 @@ Note: For the above we can remove the user student for that particular project.
 
 Note: want it does is that it removes the admin policy for the cluster role form that particular user.
 
+=================================================================================================================================
+
+Configuring Authentication:
+
+Login to Master
+
+Basic Configurating Authentication In order to know.
+
+Using htpasswd with the master config file.
+
+    yum -y install httpd-tools
+
+Edit the master configuration file.
+
+    vim /etc/origin/master/master-config.yaml
+
+Look for the oauthConfig, and change "kind" attibute in the apiversion from DenyAll to HTPasswd, directly below that add a new attribute file attribute as fallows:
+
+    kind: HTPasswdPasswordIdentityProvider
+    file: /etc/origin/openshift-passwd
+
+Create a openshift passwd file Now.
+
+    touch /etc/origin/openshift-passwd
+
+    htpasswd -b /etc/origin/openshift-passwd <student> <openshift>
+
+Note: An user "student" and the password "openshift" will be created.
+
+Now restart the service by using the below command
+
+    systemctl restart atomic-openshift-master.service
+
+Now a user "student" and passwd is configured, Now we have to setup the hostname
+
+Exit from the Master and go back to the Main terminal
+
+Go back to terminal: In the main terminal, not Master or Node
+
+Edit 
+
+    vim /etc/hosts
+
+    # OCP
+    <MasterIPAddress> <Hostname> <MasterDomain Name>
+
+save it
+
+===========================================================================
+
+Now you are ready to open up the new browser window in the deskop
+
+    https://<HostName>:8443 
+
+Note: Add Exaception, and do permentently added not to get this error again.
+
+
+we can see the openshift configured and setup for the user "student". So the user student can you openshift.
+
+=====================================================================================================================================
+
+
+
 
 
      
