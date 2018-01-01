@@ -237,6 +237,156 @@ Run the Docker storage setup
 
 Note: Do the same setup for Nodes also.
 
+==============================================================================================================================
+
+Role Bindings:
+
+Set the role-binding in which ever the project you are currently in. 
+Grant relevant access to user or group
+Pre-project basis(-n)
+per-cluster basis
+Applied for all namespaces
+
+Default Roles:
+
+--> Admin
+--> basic-user
+--> cluster-admin
+-->  edit
+--> self-provisioner
+--> view
+
+oc adm policy who-can action [action] [resource]
+oc adm policy add-role-to-uesr [role] [username]
+oc adm policy remove-role-from-user [role][username]
+oc adm ploicy remove-user[username]
+oc adm is also used for per-cluster basis.
+oc adm policy add-cluster-role-to-user[role][user]
+oc get clusterroles
+oc get /oc describe
+
+Describes the information of roles, policy, clusterroles, clusterpolicy, clusterrolebindings, scc
+
+======================================================================
+
+Managing Users and Projects in Openshift ( Four users, and for projects, and set user privalages for roles for that project )
+
+Note: Login to the Master Node via ssh root@MASTERIP 
+
+    oc whoami
+
+Create users know
+
+    htpasswd -b /etc/origin/openshift-passwd law openshift --> An user law is created
+
+    for i in shen jack chi
+    d
+    htpasswd -b /etc/origin/openshift-passwd $i openshift
+    done                              
+
+Note: The remaining three users will be created at a time( shen, jack, chi )
+
+    systemctl restart atomic-openshift-master
+
+Open New Terminal and check that the users that you have created  has access to the master account by using the below command
+
+    oc login https://master.<hostname>:8443 -u law
+    
+    oc whoami --> And check that your are logged in with the user law
+
+Note: Repeat the same proccess with the other three of them shen, jack, chi
+
+exit
+=========================================
+
+Note: you should be master Now, in the root directory
+
+Now we are going to add the label for the users that you created.
+
+    oc label user law org=PorkChopExpress ---> Now you labeled for the user law
+
+Do the same for all the other three users like as fallows:
+
+    for i in chi shen jack
+    do
+    oc label user $i org=PorkChopExpress
+    done
+
+For the above four command the labels are assigned for all the four of the users
+
+In order to check use the below command
+
+    oc describe user chi  --> check that your user chi has a label 
+
+==================================
+
+To create a Project in the openshift cluster:
+
+Login to the master Node as root
+ 
+    oc new-project dev --description="PorkChop Express engineering team"
+    oc describe project dev  --> dev is the name of the project
+
+We can create multipe projects for the users you created Just use as follows
+
+    for i engineering content prod
+    do
+    oc new-project $i --description="PorkChop Express engineering team"
+    done
+
+Note: What happens here is for the every user you created an Project "prod" will be assigned for that users you created before
+
+you can list all the projects know:
+
+    oc projects --> shows the projects of dev, engineering, content, prod all are exists
+
+===================================
+
+Granting the Admin privilages for dev, engineering, prod 
+
+    oadm policy add-role-to-user admin shen -n engineering 
+    oadm policy add-role-to-user admin shen -n dev
+    oadm policy add-role-to-user admin shen -n prod 
+
+Note: You are giving an admin permissions for the user "shan" for the engineerin, dev, prod projects. -n is the namespaces.
+
+If we want the other user "chi" has get the permission as the basic-user. The command as fallows.
+
+    oadm policy add-role-to-user basic-user chi -n dev
+    oadm policy add-role-to-user basic-user chi -n engineering
+
+Note: Here you have given an "basic-user" permission for the user "chi" for the projects dev, engineering
+
+    oadm policy add-role-to-user admin law -n content 
+
+Note : The command above is used to give admin policy for the user "law" for project "content" of Cluster.
+
+    oadm policy add-role-to-user cluster-status law -n engineering
+    oadm policy add-role-to-user cluster-status law -n prod
+
+Note: The command above is used for give the admin policy role for the user "law" to see the cluster-status for the projects engineering and prod
+
+    oadm policy add-role-to-user view law -n dev
+
+Note: The command above is used to give the admin policy role for the user "law" to view the project "dev"
+
+If you want to do the view admin policy role for the user "jack" for all the three projects dev, prod, content use the below command
+
+    for i in engineering dev prod content
+    do
+    oadm policy add-role-to-user view jack -n $i
+    done
+
+Note: what happens here it set's all the roles for the user jack.
+
+You can verify by using 
+
+    oc describe policyBindings :default -n engineering
+    oc describe policyBindings :default -n content
+    oc describe policyBindings :default -n dev
+    oc describe policyBindings :default -n prod
+
+Note: The above four commands describes all the what user has what permissions, and roles are assigned for that user for the engineering, content, dev, prod projects.
 
 
 
