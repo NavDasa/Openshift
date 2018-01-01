@@ -179,6 +179,66 @@ Check Externally
     
 ==============================================================================================================================
 
+Configuring Docker For OpenShift Container Platform for Both Master & Nodes
+
+In order to connect Master server to Node server we has to connect via "ssh" via in a single terminal 
+
+Note: Login from Terminal to Master first via ssh root@MASTERIP
+ 
+Below are the steps to connect from master to Node
+
+    ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    ll .ssh/
+    ssh-copy-id root@NodeIP
+    shh root@NODEIP --> with password we can login to Node
+
+
+The same thing that we has to do in the Node also, Because Node has to connect to Master
+
+Login form Terminal via ssh root@NODEIP
+
+    ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    ll .ssh/
+    ssh-copy-id root@MASTERIP
+    ssh root@MASTERIP --> with password we can connect to Master from Node
+
+===========================================================================================
+
+Setup Docker in both MASTER & NODES ALSO: 
+
+    systemctl status firewall (Make sure it has to be disabled)
+
+Install Specific version of docker(1.12.6) only for docker to communicate with openshift:
+
+    yum -y install docker-1.12.6
+
+    cp /etc/sysconfig/docker-storage-setup /etc/sysconfig/docker-storage-setup.orig
+
+    vim /etc/sysconfig/docker-storage-setup
+
+Remove everything in this file (Don't bother remove everything) and add only the below lines
+
+    DEVS=vdb
+    VG=docker-vg 
+
+Save it
+
+    lvmconf --disable-cluster 
+
+Run the Docker storage setup
+
+    docker-storage-setup  --> docker-pool will be create & docker-vg/docker-pool changed
+    lvs --> can see the docker-pool, Volume Group, LSize etc
+
+    cat /etc/sysconfig/docker-storage
+    
+    systemctl enable docker
+    systemctl start docker 
+
+Note: Do the same setup for Nodes also.
+
+
+
 
 
      
