@@ -296,7 +296,8 @@ Open New Terminal and check that the users that you have created  has access to 
 
 Note: Repeat the same proccess with the other three of them shen, jack, chi
 
-exit
+Exit from the terminal
+
 =========================================
 
 Note: you should be master Now, in the root directory
@@ -388,6 +389,52 @@ You can verify by using
 
 Note: The above four commands describes all the what user has what permissions, and roles are assigned for that user for the engineering, content, dev, prod projects.
 
+========================================================================
+
+Login to the Master 
+
+    oc whoami --> can see that you are the sytem:admin
+    oc describe clusterPolicy default --> Tells you to view the cluster policys
+
+    oc describe clusterPolicyBindings :default
+
+    oc get projects --> Get all default, kube-system,logging,management-infra,openshift,openshift-infra projects by default in the openshift.
+
+    oc describe policyBindings :default -n openshift  --> gives you all the policy information,users,groups,imagepullers, about the "openshift" project or namespace.
+
+================================
+
+create a new-project by any name you need
+
+    oc new-project <new-projectname>
+
+Just want to know the newly created policy binding
+
+    oc describe policyBindings :default -n <new-projectname> --> Tells all the information like it don't have noting like no labels.
+
+    oc adm policy add-role-to-user admin <student> -n <new-projectname> 
+
+Note: we can check that user "student" has a admin policy for the new-project that we created. Here what happens is that we are managing privilazes per the namespaces or per project bases.
+
+what about on the Cluster basis ?
+
+    oc adm policy add-cluster-role-to-use cluster-admin <student>
+
+Note: what happens for the above command is we can give a user "student" a full cluster-admin access.
+
+    oc describe clusterPolicyBindings :default | grep cluster-admin -A4 --> Describes the complete information of the cluster, users, groups.
+
+====================================
+
+    oc adm policy remove-user <student> -n <projectname>
+
+Note: For the above we can remove the user student for that particular project.
+
+==============================
+
+    oc adm policy remove-cluster-role-from-user cluster-admin <student>
+
+Note: want it does is that it removes the admin policy for the cluster role form that particular user.
 
 
 
