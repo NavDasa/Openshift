@@ -601,6 +601,87 @@ we can do all this with the openshift console very easily also
 
 ================================================================
 
+Creating Presistent Volumes with NFS:
+
+Login to Master:
+
+Name it as mariadb-persistent-ex280.yml
+
+
+    vim mariadb-persistent-ex280.yml (can keep any thing)
+
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: persistent01
+    spec:
+      capacity:
+        storage: 1Gi
+      accessModes:
+      - ReadWWriteOnce
+      nfs:
+        path: /home/data
+        server: <serverIP for Master>
+      persistentVolumeReclaimPolicy: Recycle
+
+save it 
+
+Logout from the master
+
+Openup New terminal and open to the dev environment, 
+
+    ssh root@192.168.10.250 --> (The MasterIP ADDRESS )
+
+    mkdir -p /home/data/persistent01
+    chown -R nfsnoboby:nfsnobody /home/data/persistent01
+    chmod 700 /home/data/persistent01
+
+    vim /etc/exports.d/dbvol.exports
+
+    # Add the line below
+    /home/data/persistent01 *(rw,async,all_squash)
+
+save it
+
+    rpm -qa | grp nfs --> nfs is installed
+
+    systemctl is-enabled nfs
+
+    systemctl enable nfs
+    systemctl status nfs --> (should be inactive)
+    systemctl start nfs
+
+    exportfs -a
+    showmount -e --> Just show the persistent01 is available or not
+
+
+logout
+
+Login to the Node 1 from terminal 
+
+    ssh root@NodeIP
+
+    mount -t nfs <ServerIP of Master>:/home/data/persistent01 /mnt
+
+    ll /mnt/ 
+
+ Note: Our Nfs we also mount to Nodes also by ckecking wwith creating testfile.
+
+we can unmount also by using the below command:
+
+    umount /mnt/
+
+logout
+
+================
+
+Can also create the persistent volume also by using the command below:
+
+    oc create -f mariadb-persistent-ex280.yml
+    oc get pv
+    oc describe pv <persistent volume name> 
+
+=================================================================================================================
 
 
 
