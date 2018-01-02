@@ -683,6 +683,67 @@ Can also create the persistent volume also by using the command below:
 
 =================================================================================================================
 
+Creating a pod with Persistent Storage:
+
+Login to the Openshift MasterNode
+
+    oc whoami --> system:admin
+
+we can make a new project for our Database to live under:
+
+    oc new-project <database>
+
+Clone the sample repository's
+
+we also get a sample templetes available for databases in the origin directory.
+
+    cd /origin/examples
+
+    cd db-templetes
+
+use the mariadbpersistent template.json , Look at how it looks by opening that.
+
+====================================
+
+Create a Templete under by namespaces or under my project: Note we are in the db-templetes directory
+
+    oc create -f mariadb-persistent-template.json
+
+    oc new-app mariadb-persistent-template.json -p \
+    MYSQL_ROOT_PASSWORD=openshift -p MY_PASSWORD=openshift \
+    -p MYSQL_USER=openshift -p MYSQL_DATABASE=openshift
+
+    oc get pv --> It should bound to our mariadb CLAIM
+
+    oc get pods
+
+    cd ~
+
+    oc describe pod <mariadb-1-48t9w pod name> | grep IP
+
+we can create a new file for make sure that our db is functional correctly.
+
+vim quotes.sql
+
+    create table quote (id integer primary key, msg varchar(250));
+    insert into quote values (1, 'Talk is cheap. Show mw the code.');
+    insert into quote values (2, 'The Linux philosophy is Laugh in the face of danger. Oops. Worng one. Do it yourself. Yes, thats it.');
+    insert into quote values (3, 'Dont hurry your code. Make sure it works well and is well designed. Dont worry about timing.');
+    insert into quote values (4, 'If Microsoft ever does applications for Linux it means I have won.');
+
+
+save it
+
+    rpm -qa | grep mysql --> check that my sql is installed or not
+    yum -y install mysql 
+    mysql -h10.129.1.154 -uopenshift -popenshift openshift < quotes.sql  --> 10.129.1.154 is the pod IP Address
+    mysql -h10.129.1.154 -uopenshift -popenshift openshift --> Login to the Database mariadb
+
+After Login to the mariaDB database Just type the fallowing commands:
+
+    show tables;
+    slect count(*) from quote;
+    quit
 
 
 
