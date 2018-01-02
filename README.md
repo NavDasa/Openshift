@@ -745,6 +745,32 @@ After Login to the mariaDB database Just type the fallowing commands:
     slect count(*) from quote;
     quit
 
+==================================================================================================================================
+How we can create a mysql database from the with the OPENSHIFT console:
+
+Login as a Student user:
+
+New Project --> catalogs --> Databases --> MYSQL database --> Mysql Connection Username --> Password --> DatabaseName 
+--> Volume Capacity --> create 
+
+Conitue to overview --> Applications --> Pods --> Copy IPADDRESS 
+
+Go to terminal of master 
+
+    mysql -h10.129.1.158 -uopenshift -popenshift openshift
+
+Can see our database In terminal.
+
+    show tables;
+    select count(*) from quote;
+
+If we go and look in the dev server 
+
+    ssh root@dev
+
+    cd /home/data/persistent01/
+
+Thats it we can see the mysql database here that we created in the OPENSHIFT.
 
 
      
