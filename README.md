@@ -496,6 +496,110 @@ Note: Add Exaception, and do permentently added not to get this error again.
 we can see the openshift configured and setup for the user "student". So the user student can you openshift.
 
 =====================================================================================================================================
+Creating a POD:
+
+we have to create an sample ruby Application in an openshift container platform.
+
+Login to the cluster of master Node.
+
+ssh root@MasterIp
+
+oc whoami --> system:admin
+
+oc projects --> all the project
+
+oc project --> we have the default project
+
+oc get pods --> we can see that our docker-registry, router, registry console working under the default projects.
+
+=================
+
+Create a New Project:
+
+    oc new-project <myproject>
+
+we can do an sample Example Ruby-Application from the default git hub repository as fallows
+
+    oc new-app <centos/ruby-22-centos7~https://github.com/openshift/ruby-ex.git>
+
+watch oc get pods --> can watch the build progress for the pod, Control+c to get out of this.
+
+    oc get pods --> All the pods
+    oc describe pod <podname> --> we are most conserend about IP Address.
+
+we has to set the Router. In order to access for that Application 
+
+    curl <IPADdress of pod we get this in pod decribe>
+
+Note: We get this in our Terminal, Internally.
+
+What if we want to get application in the webbrowser ?
+
+we has to Expose the service.
+
+    oc expose svc ruby-ex --> If the application is ruby can use that command
+    oc get routes  --> get the hostname name of the project.
+
+    curl <Hostname of the project for that route we get from above>
+
+Note: we get ruby application running with openshift cloud.
+
+    oc delete project <myproject>
+
+===================================================================================================
+
+
+Enable TLS Termination on Openshift routes: (Secureing a POD with TLS Termination)
+
+Example: Do with Ruby application that we can get it from github repository.
+
+Login to Master.
+
+    oc whoami --> we has to make sure that we are sytem:admin
+
+    oc new-project <secure>
+    oc new-app <can paste from the above output as sample Ruby application>
+
+    oc get builds
+    watch oc get builds --> can see what going on for build. created or not takes a time of 49s
+    oc get svc --> get all the services
+
+    oc get routes --> get the routes of the application 
+
+Copy the hostname of the new one created and paste this in browser, we can see the webpage.
+
+what if we want to secure that application ?
+
+we have to edit our route as fallows:
+
+    oc edit route <route-name>
+
+Here we get the YAML file, If we want to edit that Go directly to the ":set"  In the "spec" section and add tls, and termination: edge as fallows:
+
+    spec:
+      host: ruby-ex-secure.ocp.master.academybytes.com
+      tls:
+      termination: edge
+
+If we want to edit the Port, we can do but here we are not goind to edit that, if we edit that we has to change the deployment config, build config also.
+
+save the file 
+
+    oc get route
+
+we get the temination edge standard enabled. Now Copy the Rout Hostname and paste in the web browser with https.
+
+==========================================================================================================
+
+we can do all this with the openshift console very easily also
+
+--> create New project by giving name, displayname, Description.
+--> open catalog --> chosse python --> sample django project, --> Advanced options --> Under Routing we can automatically secure by clicking check mark secure
+--> TLS Termination(Edge) --> Insecure Traffic (None) --> create. --> overview --> see over pod is ready.
+
+--> open up near the pod hostname --> SSL warning --> Add exception --> Click the check mark Permenently store --> comfirm security group.
+
+================================================================
 
 
 
