@@ -772,5 +772,136 @@ If we go and look in the dev server
 
 Thats it we can see the mysql database here that we created in the OPENSHIFT.
 
+Resource Quotes:
+
+For Resource Quotes an YAML in the YAML file it should not exists 
+
+--> Total number of Pods --> 4
+--> Total CPU requests --> 1
+--> Sum of Memory Requests --> 2GI
+--> Sum of CPU limites --> 2
+--> Sum of Memory Limits --> 4GI
+
+Open Shift Cluster Metrics Overview:
+
+Kubelet --> HEAPSTER --> HAWKULAR METRICS --> CASSANDRA DAATABASE --> cpu+memory+Network-base metrics.
+
+Kublet --> checks files Path on the Commandline for every 20 seconds
+
+--> HTTP Endpoint for Every 20 seconds
+--> Kubelet watching An ETCD SERVER in /register/hosts/$(hostname-f), and acting on any changes
+--> Kubelet listing an HTTP responding to a Simple API to submit a NEW MANIFEST.
+
+====================================================================================================
+
+HEAPSTER : (Backends)
+
+Container cluster monitoring
+Performance analysis
+Collect+Interpret various signals
+Pluggable storage
+Multiple data sources
+
+Configuration:: NFS HOST GROUP
+
+    openshift_metrics_install_metrics=true
+
+cluster metrics willbe in the nfs_directory=/exports, nfs_options='*(re,root_squash)' & can see  the hidden metrics in the nfs host file
+
+The cluster metrics will be in the config file.
+
+    openshift_metrics_install_metrics=true
+
+============================================================================================================================
+
+Installing Cluster metrics with Openshift-ansible:
+
+How to configure cluster metrics in OpenShift using openshift-ansible playbooks.
+
+Note: Cluster metrics will be stored in the CASSANDRA Storage as a database which requires storage provisioning. Pem rule storage doesnot
+survive reboot. If the cluster is rebooted all data stored in the empty dir will be destroyed and lost.
+
+We should not use pem rule, we are going to configure a persistent volume storage for our cluster metrics hosted on virtual mechine.
+
+
+Login to Master Node:
+
+    vim cassandra-data.YAML
+
+    apiVersion: v1
+    knid: PersistentVolume
+    metadata:
+      name: cassandra-data
+    spec:
+      capacity:
+        storage: 10Gi
+      accessModes:
+      - ReadWriteOnce
+      nfs:
+        path: /var/data/ocp-metrics
+        server: 192.168.10.250
+      PersistentVolumeReclaimPolicy: Recycle
+
+
+Save it 
+
+    oc create -f cassandra-data.yml
+
+    oc get pv
+    clear
+
+vim .config/openshift/hosts
+
+--> Look for the under the section [OSEv3:vars] add the below line, why this is because we are saying to openshift that we are installing ansible by changing cluster metrics to True, service hawkular, cassendra storage typr, storage volume name, storage volume size, storage host location.
+
+	
+	openshift_metrics_install_metrics=True
+	openshift_metrics_hawkular_hostname=hawkular-openshift-infra.ocp.master.academybytes.com
+	openshift_metrics_cassandra storage_tyor=pv
+	openshift_metrics_storage_volume_name=cassandra-data
+	openshift_metrics_storage_volume_size=10Gi
+	openshift_metrics_storage_host=<MASTER IP ADDress>
+
+save it
+
+    ansible-playbook -i .config/openshift/hosts /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
+
+Note: Don't use that menthod and above command.
+
+Use the below method.
+
+    ansible-playbook -i .config/openshift/hosts /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/openshift-metrics.yml -e openshift_metrics_install_metrics=True \ -e openshift_metrics_hawkular_hostname=metrics-openshift-infra.ocp.master.academybytes.com \ -e openshift_metrics_cassandra_storage_type=pv
+
+Note: Installation is completed for the openshift
+
+Can make sure by using the below commands:
+
+    oc project openshift openshift-infra
+    oc get pods
+
+    oadm policy add-cluster-role-to-user cluster-admin student (role is added for the user student)
+
+Note : For the above command the student cluster admin has is can view all the permissions to view. you can check this in web browser.
+can look at all the projects, and can view the metrics also.
+
+
+In order to verify that our cessandra storage is using the persistant volume for the cluster by using the below command
+
+    oc get pv
+
+Note: we can see here that over cluster metrics of the openshift is configured. And Installed ansible-playbooks in openshift.
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
      
