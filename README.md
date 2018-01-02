@@ -1,6 +1,32 @@
 # Openshift
 A complete Linux Redhat 7 Openshift
 
+Openshift is the Enterprise version of kubernetes + Docker.
+
+--> Docker : Provides an llight weight container images
+--> Kubernetes: Provides the cluster management and orchestrates containers on Multiple hosts.
+--> source code management
+--> Image management
+--> Application Management scale
+--> Team and user tracking
+--> Cluster networking
+--> Rest API
+--> Controllers
+
+Main features:
+
+--> Self-service platform
+--> Automation
+--> User Interfaces
+--> Scalability
+--> Container Portability
+--> opensource
+
+Kubernetes == Openshift
+
+Openshift Overview:
+
+--> Core concepts: Containers, images, pods, services, Projects, users, Buil and image storing, Deployment, Routes, Templetes.
 
 First In order to get ahead of Openshift, First of all we has to set up a KVM for master, and also some Nodes. And it has to be done in the Linux environment Redhat7. ISO Image.
 
